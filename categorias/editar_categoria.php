@@ -10,6 +10,10 @@
         ini_set("display_errors", 1 );
         
         require("../util/conexion.php");
+        if (!isset($_SESSION["usuario"])) {
+            header("location: ../index.php");
+            exit;
+        }
     ?>
     <style>
         .custom-button-group{
@@ -37,6 +41,7 @@
         }
 
         .custom-header {
+            margin-left: 10px;
             font-weight: bold;
             text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
             letter-spacing: 1px;
@@ -65,7 +70,7 @@
 
     <div class="container">
 
-        <h1>Editar categoría</h1>
+        <h1 class="display-4 text-primary mb-4 custom-header">Editar categoría</h1>
         <?php
 
         $categoria = $_GET["categoria"];

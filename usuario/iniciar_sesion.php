@@ -10,7 +10,49 @@
         ini_set("display_errors", 1 );
         
         require("../util/conexion.php");
+        session_start();
+        if (isset($_SESSION["usuario"])) {
+            header("location: ../index.php");
+            exit;
+        }
     ?>
+    <style>
+        .custom-button-group{
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+            padding-bottom: 20px;
+        }
+
+        .custom-button-group .btn {
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 8px;
+        }
+
+        .custom-button-group .btn-primary {
+            background-color: #007bff;
+            border-color: #0056b3;
+        }
+
+        .custom-button-group .btn-secondary{
+            background-color: #6c757d;
+            border-color: #545b62;
+        }
+
+        .custom-header {
+            margin-left: 10px;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+            letter-spacing: 1px;
+        }
+
+        .error {
+            color: red;
+            font-size: 14px;
+        }
+    </style>
 </head>
 <body>
     <?php
@@ -20,22 +62,13 @@
 
             $sql = "SELECT * FROM usuarios WHERE usuario = '$usuario'";
             $resultado = $_conexion -> query($sql);
-            /* var_dump($resultado); */
 
             if ($resultado -> num_rows == 0) {
                 echo "<h2>El usuario $usuario no existe.</h2>";
             } else {
                 $datos_usuario = $resultado -> fetch_assoc();
-                /* 
-                    Tendremos acceso a todos los campos de la tabla
-                    $datos_usuario["usuario"];
-                    $datos_usuario["contrasena"];
-                    Crea un array asociativo
-                */
-                $acceso_concedido = password_verify($contrasena,$datos_usuario["contrasena"]); // Descifra la contraseña de la BBDD
-                /* var_dump($acceso_concedido); */
+                $acceso_concedido = password_verify($contrasena,$datos_usuario["contrasena"]);
                 if ($acceso_concedido) {
-                    // todo bien
                     session_start();
                     $_SESSION["usuario"] = "$usuario";
                     header("location: ../index.php");
@@ -46,21 +79,41 @@
             }
         }
     ?>
+    <nav>
+        <ul class="nav nav-tabs justify-content-center"><p></p></ul>
+        <ul class="nav nav-tabs justify-content-center">
+            <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="../index.php">Inicio</a>
+            </li>
+        </ul>
+    </nav>
     <div class="container">
-        <h1>Iniciar Sesión</h1>
+        <h1 class="display-4 text-primary mb-4 custom-header">Iniciar Sesión</h1>
 
         <form class="col-6" action="" method="post" enctype="multipart/form-data">
-            <div class="mb-3">
-                <label class="form-label">Usuario</label>
-                <input class="form-control" type="text" name="usuario">
+        <div class="form-floating mb-3">
+                <input class="form-control" type="text" name="usuario" style="font-size: 14px;">
+                <label for="usuario" style="margin-top: -6px;">Usuario</label>
+                <?php 
+                    if(isset($err_usuario)){
+                        echo "<span class='error'>$err_usuario</span>";
+                    }
+                ?>
             </div>
-            <div class="mb-3">
-                <label class="form-label">Contraseña</label>
-                <input class="form-control" type="password" name="contrasena">
+
+            <div class="form-floating mb-3">
+                <input class="form-control" type="password" name="contrasena" style="font-size: 14px;">
+                <label for="contrasena" style="margin-top: -6px;">Contraseña</label>
+                <?php 
+                    if(isset($err_contrasena)){
+                        echo "<span class='error'>$err_contrasena</span>";
+                    }
+                ?>
             </div>
-            <div class="mb-3 btn-group">
-                <input class="btn btn-info" type="submit" value="Iniciar Sesión">
-                <a class="btn btn-info" href="./registro.php">Registrarse</a>
+
+            <div class="custom-button-group">
+                <input class="btn btn-primary" type="submit" value="Iniciar Sesión">
+                <a class="btn btn-secondary" href="./registro.php">Registrarse</a>
             </div>
         </form>
     </div>

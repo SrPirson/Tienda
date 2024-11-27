@@ -10,16 +10,48 @@
         
         require("./util/conexion.php");
 
-        session_start(); // Siempre hay que abrir la sesión, para recuperar
-        if (isset($_SESSION["usuario"])) {
-            echo "<h2>Bienvenid@ " . $_SESSION["usuario"] . "</h2>";
-        }
+        session_start();
     ?>
 
     <style>
+        .custom-button-group{
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+            padding-bottom: 20px;
+        }
+
+        .custom-button-group .btn {
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 8px;
+        }
+
+        .custom-button-group .btn-primary {
+            background-color: #007bff;
+            border-color: #0056b3;
+        }
+
+        .custom-button-group .btn-secondary{
+            background-color: #6c757d;
+            border-color: #545b62;
+        }
+
+        .custom-header {
+            margin-left: 10px;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+            letter-spacing: 1px;
+        }
+
+        .error {
+            color: red;
+            font-size: 14px;
+        }
         img {
             width: 100px;
-            height: 150px;
+            height: 100px;
         }
     </style>
 
@@ -32,12 +64,20 @@
             <li class="nav-item">
                 <?php
                     if (isset($_SESSION["usuario"])) {
+                        echo "<p class='nav-link mb-0 text-secondary'>Bienvenid@ " . $_SESSION["usuario"] . "</p>";
+                    }
+                ?>
+            </li>
+            <li class="nav-item">
+                <?php
+                    if (isset($_SESSION["usuario"])) {
                         echo "<a class='nav-link' href='./usuario/cerrar_sesion.php'>Cerrar sesión</a>";
                     } else {
                         echo "<a class='nav-link' href='./usuario/iniciar_sesion.php'>Iniciar sesión</a>";
                     }
                 ?>
             </li>
+            
         </ul>
         <ul class="nav nav-tabs justify-content-center">
             <li class="nav-item">
@@ -55,7 +95,7 @@
             <li class="nav-item">
                 <?php
                     if (isset($_SESSION["usuario"])) {
-                        echo "<a class='nav-link' aria-current='page' href='./categorias/index.php'>Productos</a>";
+                        echo "<a class='nav-link' aria-current='page' href='./productos/index.php'>Productos</a>";
                     } else {
                         echo "<a class='nav-link' aria-current='page' href='./productos/index.php' hidden>Productos</a>";
                     }
@@ -64,7 +104,7 @@
         </ul>
     </nav>
 
-    <h1>Tabla de productos</h1>
+    <h1 class="display-4 text-primary mb-4 custom-header">Productos</h1>
     <?php
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $id_producto = $_POST["id_producto"];
@@ -98,7 +138,7 @@
                     echo "<td class='table-primary'>" . $fila["descripcion"] . "</td>";
                     ?>
                     <td class='table-secondary'>
-                        <img src="<?php echo $fila["imagen"] ?>" alt="">
+                        <img src="./imagenes/<?php echo $fila["imagen"] ?>" alt="">
                     </td>
                     <?php
                     echo "</tr>";

@@ -10,6 +10,11 @@
         ini_set("display_errors", 1);
         
         require("../util/conexion.php");
+        session_start();
+        if (!isset($_SESSION["usuario"])) {
+            header("location: ../index.php");
+            exit;
+        }
     ?>
     <style>
 
@@ -38,6 +43,7 @@
     }
 
     .custom-header {
+        margin-left: 10px;
         font-weight: bold;
         text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
         letter-spacing: 1px;
@@ -76,10 +82,21 @@
             if ($tmp_categoria == "") {
                 $err_categoria = "La categoría es ogligatoria.";
             } else {
-                if (strlen($tmp_categoria) > 30) {
-                    $err_categoria = "La categoría tiene un máximo del 30 caracteres.";
+                if (strlen($tmp_categoria) < 2 || strlen($tmp_categoria) > 30) {
+                    $err_categoria = "La categoría tiene que tener entre 2 y 30 caracteres.";
                 } else {
-                    $categoria = $tmp_categoria;
+                    $patron_categoria = "/[a-zA-ZñÑ ]+/";
+                    if (!preg_match($patron_categoria, $tmp_categoria)) {
+                        $err_categoria = "La categoría solamente puede contener letras y espacios en blanco.";
+                    } else {
+                        $sql = "SELECT * FROM categorias WHERE categoria = '$tmp_categoria'";
+                        $resultado = $_conexion -> query($sql);
+                        if ($resultado -> num_rows == 1) {
+                            $err_categoria = "La categoría ya existe.";
+                        } else {
+                            $categoria = $tmp_categoria;
+                        }
+                    }
                 }
             }
 
@@ -124,7 +141,7 @@
             <!-- Botones -->
             <div class="custom-button-group">
                 <input class="btn btn-primary" type="submit" value="Añadir">
-                <a class="btn btn-secondary" href="../productos/index.php">Volver</a>
+                <a class="btn btn-secondary" href="./index.php">Volver</a>
             </div>
 
         </form>

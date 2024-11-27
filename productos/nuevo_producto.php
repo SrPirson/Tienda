@@ -10,6 +10,10 @@
         ini_set("display_errors", 1);
         
         require("../util/conexion.php");
+        if (!isset($_SESSION["usuario"])) {
+            header("location: ../index.php");
+            exit;
+        }
     ?>
     <style>
 
@@ -38,6 +42,7 @@
     }
 
     .custom-header {
+        margin-left: 10px;
         font-weight: bold;
         text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
         letter-spacing: 1px;
@@ -120,7 +125,7 @@
                 $err_categoria = "La categoría es ogligatoria.";
             } else {
                 if (strlen($tmp_categoria) > 30) {
-                    $err_categoria = "La categoría debe tener un máximo del 50 caracteres.";
+                    $err_categoria = "La categoría debe tener un máximo del 30 caracteres.";
                 } else {
                     $sql = "SELECT * FROM categorias";
                     $resultado_categoria = $_conexion -> query($sql);
@@ -170,7 +175,6 @@
         while ($fila = $resultado -> fetch_assoc()) {
             array_push($categorias, $fila["categoria"]);
         }
-        /* print_r($categorias); */
 
         ?>
         <form class="col-6" action="" method="post" enctype="multipart/form-data">
@@ -187,7 +191,7 @@
 
             <!-- Precio -->
             <div class="form-floating mb-3">
-                <input id="precio" class="form-control" type="number" step="any" name="precio" style="font-size: 14px;">
+                <input id="precio" class="form-control" type="text" name="precio" style="font-size: 14px;">
                 <label for="precio" style="margin-top: -6px;">Precio</label>
                 <?php 
                     if(isset($err_precio)){
