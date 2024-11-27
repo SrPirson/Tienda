@@ -8,39 +8,58 @@
         error_reporting( E_ALL );
         ini_set("display_errors", 1);
         
-        require("../util/conexion.php");
+        require("./util/conexion.php");
+
+        session_start(); // Siempre hay que abrir la sesión, para recuperar
+        if (isset($_SESSION["usuario"])) {
+            echo "<h2>Bienvenid@ " . $_SESSION["usuario"] . "</h2>";
+        }
     ?>
+
     <style>
         img {
             width: 100px;
             height: 150px;
         }
     </style>
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 </head>
 <body>
 
     <nav>
         <ul class="nav nav-tabs justify-content-end">
-        <li class="nav-item">
+            <li class="nav-item">
                 <?php
-                if (isset($_SESSION["usuario"])) {
-                    echo "<a class='nav-link' href='./usuario/iniciar_sesion.php'>Cerrar sesión</a>";
-                } else {
-                    echo "<a class='nav-link' href='./usuario/iniciar_sesion.php'>Iniciar sesión</a>";
-                }
+                    if (isset($_SESSION["usuario"])) {
+                        echo "<a class='nav-link' href='./usuario/cerrar_sesion.php'>Cerrar sesión</a>";
+                    } else {
+                        echo "<a class='nav-link' href='./usuario/iniciar_sesion.php'>Iniciar sesión</a>";
+                    }
                 ?>
             </li>
         </ul>
         <ul class="nav nav-tabs justify-content-center">
             <li class="nav-item">
-                <a class="nav-link" aria-current="page" href="../index.php">Inicio</a>
+                <a class="nav-link active" aria-current="page" href="./index.php">Inicio</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" aria-current="page" href="../categorias/index.php">Categorías</a>
+                <?php
+                    if (isset($_SESSION["usuario"])) {
+                        echo "<a class='nav-link' aria-current='page' href='./categorias/index.php'>Categorías</a>";
+                    } else {
+                        echo "<a class='nav-link' aria-current='page' href='./categorias/index.php' hidden>Categorías</a>";
+                    }
+                ?>
             </li>
             <li class="nav-item">
-                <a class="nav-link active" href="./index.php">Productos</a>
+                <?php
+                    if (isset($_SESSION["usuario"])) {
+                        echo "<a class='nav-link' aria-current='page' href='./categorias/index.php'>Productos</a>";
+                    } else {
+                        echo "<a class='nav-link' aria-current='page' href='./productos/index.php' hidden>Productos</a>";
+                    }
+                ?>
             </li>
         </ul>
     </nav>
@@ -57,9 +76,6 @@
         $resultado = $_conexion -> query($sql);
     ?>
     <br>
-    <a class="btn btn-info" href="nuevo_producto.php">Agregar un producto</a>
-    <a class="btn btn-info" href="../categorias/index.php">Ver categorías</a>
-    <br><br>
     <table class="table text-center table-bordered border-secundary table-hover table-light">
         <thead class="table-dark">
             <tr>
@@ -67,10 +83,8 @@
                 <th>Precio</th>
                 <th>Categoría</th>
                 <th>Stock</th>
-                <th>Imagen</th>
                 <th>Descripción</th>
-                <th></th>
-                <th></th>
+                <th>Imagen</th>
             </tr>
         </thead>
         <tbody class="table-group-divider">
@@ -85,18 +99,6 @@
                     ?>
                     <td class='table-secondary'>
                         <img src="<?php echo $fila["imagen"] ?>" alt="">
-                    </td>
-                    <td>
-                        <a  class="btn btn-primary"
-                            href="editar_producto.php?id_producto=<?php echo $fila["id_producto"] ?>">
-                            Editar
-                        </a>
-                    </td>
-                    <td>
-                        <form action="" method="post">
-                            <input type="hidden" name="id_producto" value="<?php echo $fila["id_producto"] ?>">
-                            <input class="btn btn-danger" type="submit" value="Borrar">
-                        </form>
                     </td>
                     <?php
                     echo "</tr>";

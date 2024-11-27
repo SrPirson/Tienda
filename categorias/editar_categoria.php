@@ -64,6 +64,7 @@
     ?>
 
     <div class="container">
+
         <h1>Editar categoría</h1>
         <?php
 
