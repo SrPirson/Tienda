@@ -109,7 +109,7 @@
         $resultado = $_conexion -> query($sql);
     ?>
     <div class="custom-button-group">
-        <a class="btn btn-info" href="nuevo_producto.php">Agregar un producto</a>
+        <a class="btn btn-info" href="./nuevo_producto.php">Agregar un producto</a>
     </div>
     <table class="table text-center table-bordered border-secundary table-hover table-light">
         <thead class="table-dark">

@@ -10,6 +10,7 @@
         ini_set("display_errors", 1 );
         
         require("../util/conexion.php");
+        session_start();
         if (!isset($_SESSION["usuario"])) {
             header("location: ../index.php");
             exit;
@@ -67,6 +68,21 @@
             return $salida;
         }
     ?>
+
+    <nav>
+        <ul class="nav nav-tabs justify-content-center"><p></p></ul>
+        <ul class="nav nav-tabs justify-content-center">
+            <li class="nav-item">
+                <a class="nav-link" aria-current="page" href="../index.php">Inicio</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="./index.php">Categorías</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="../productos/index.php">Productos</a>
+            </li>
+        </ul>
+    </nav>
 
     <div class="container">
 

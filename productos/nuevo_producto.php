@@ -10,6 +10,7 @@
         ini_set("display_errors", 1);
         
         require("../util/conexion.php");
+        session_start();
         if (!isset($_SESSION["usuario"])) {
             header("location: ../index.php");
             exit;
@@ -83,22 +84,37 @@
             $tmp_stock = depurar($_POST["stock"]);
             $tmp_descripcion = depurar($_POST["descripcion"]);
 
+
+            /* Validación imagenes */
             $nombre_img = $_FILES["imagen"]["name"];
             $ubi_tmp_img = $_FILES["imagen"]["tmp_name"];
-            $ubi_final_img = "../imagenes/$nombre_img";
             $type_img = $_FILES["imagen"]["type"];
-
-            move_uploaded_file($ubi_tmp_img, $ubi_final_img);
-
+            
+            if (strlen($nombre_img) > 60) {
+                $err_imagen = "El nombre de la imagen no puede superar los 60 catacteres.";
+            } else {
+                $lista_extensiones = ["image/png", "image/jpg", "image/jpeg", "image/webp"];
+                if (!in_array($type_img, $lista_extensiones)) {
+                    $err_imagen = "La extensión de imagen no es admitida.";
+                } else {
+                    $ubi_final_img = "../imagenes/$nombre_img";
+                    move_uploaded_file($ubi_tmp_img, $ubi_final_img);
+                }
+            }
 
             /* Validación nombre */
             if ($tmp_nombre == "") {
                 $err_nombre = "El nombre es obligatorio.";
             } else {
-                if (strlen($tmp_nombre) > 50) {
-                    $err_nombre = "El nombre tiene un máximo del 50 caracteres.";
+                if (strlen($tmp_nombre) < 2 || strlen($tmp_nombre) > 50) {
+                    $err_nombre = "El nombre tiene que tener entre 2 y 50 caracteres.";
                 } else {
-                    $nombre = $tmp_nombre;
+                    $patron_nombre = "/^[a-zA-Z0-9 ]+/";
+                    if (!preg_match($patron_nombre, $tmp_nombre)) {
+                        $err_nombre = "El nombre solo puede tener letras, números y espacios en blanco.";
+                    } else {
+                        $nombre = $tmp_nombre;
+                    }
                 }
             }
 
@@ -110,12 +126,16 @@
                 if (!is_numeric($tmp_precio)) {
                     $err_precio = "El precio debe ser numérico";
                 } else {
-                    $patron_precio = "/^[0-9]{1,4}(\.[0-9]{1,2})?$/";
-                    if (!preg_match($patron_precio, $tmp_precio)) {
-                        $err_precio = "El rango de precio es de 0 hasta 9999.99";
+                    if ($tmp_precio < 0 || $tmp_precio > 2147483647) {
+                        $err_precio = "El precio debe ser mayor a 0 y menor a 2.147.483.647.";
                     } else {
-                        $precio = $tmp_precio;
-                    }
+                        $patron_precio = "/^[0-9]{1,4}(\.[0-9]{1,2})?$/";
+                        if (!preg_match($patron_precio, $tmp_precio)) {
+                            $err_precio = "El rango de precio es de 0 hasta 9999.99";
+                        } else {
+                            $precio = $tmp_precio;
+                        }
+                    }   
                 }
             }
 
@@ -148,8 +168,8 @@
             if (!is_numeric($tmp_stock)) {
                 $err_stock = "El stock debe ser numérico";
             } else {
-                if ($tmp_stock < 0) {
-                    $err_stock = "El stock no puede ser negativo.";
+                if ($tmp_stock < 0 || $tmp_stock > 2147483647) {
+                    $err_stock = "El stock debe ser mayor a 0 y menor a 2.147.483.647.";
                 } else {
                     $stock = $tmp_stock;
                 }
@@ -221,7 +241,7 @@
 
             <!-- Stock -->
             <div class="form-floating mb-3">
-                <input id="stock" class="form-control" type="number" name="stock" style="font-size: 14px;">
+                <input id="stock" class="form-control" type="text" name="stock" style="font-size: 14px;">
                 <label for="stock" style="margin-top: -6px;">Stock</label>
                 <?php 
                     if(isset($err_stock)){
@@ -234,6 +254,11 @@
             <div class="form-floating mb-3">
                 <input class="form-control" type="file" name="imagen" id="imagen" style="font-size: 14px;">
                 <label for="imagen" style="margin-top: -6px;">Imagen</label>
+                <?php 
+                    if(isset($err_imagen)){
+                        echo "<span class='error'>$err_imagen</span>";
+                    }
+                ?>
             </div>
 
             <!-- Descripción -->
