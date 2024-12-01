@@ -133,10 +133,10 @@
                 ?>
             </div>
 
-            <div class="mb-3 btn-group">
+            <div class="custom-button-group">
+                <input class="btn btn-primary" type="submit" value="Editar">
+                <a class="btn btn-secondary" href="index.php">Volver</a>
                 <input type="hidden" name="categoria" value="<?php echo $categoria ?>">
-                <input class="btn btn-info" type="submit" value="Editar">
-                <a class="btn btn-info" href="index.php">Volver</a>
             </div>
 
         </form>

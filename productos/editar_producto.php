@@ -113,13 +113,13 @@
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $tmp_nombre = depurar($_POST["nombre"]);
             $tmp_precio = depurar($_POST["precio"]);
-            $tmp_categoria = depurar($_POST["categoria"]);
+            $tmp_categoria = depurar($_POST["categoria_nueva"]);
             $tmp_stock = depurar($_POST["stock"]);
             $tmp_descripcion = depurar($_POST["descripcion"]);
-            
 
 
             /* Validación imagenes */
+
             if ($_FILES["imagen"]["name"] != "") {
                 $nombre_img = $_FILES["imagen"]["name"];
                 $ubi_tmp_img = $_FILES["imagen"]["tmp_name"];
@@ -136,6 +136,8 @@
                         move_uploaded_file($ubi_tmp_img, $ubi_final_img);
                     }
                 }
+            } else {
+                $ubi_final_img = $imagen;
             }
             
 
@@ -179,16 +181,14 @@
 
             /* Validación categoria */
             if ($tmp_categoria == "") {
-                $err_categoria = "La categoría es obligatoria.";
+                $categoria_nueva = $categoria_original;
             } else {
                 if (strlen($tmp_categoria) > 30) {
                     $err_categoria = "La categoría debe tener un máximo de 30 caracteres.";
+                } elseif (!in_array($tmp_categoria, $lista_categorias)) {
+                    $err_categoria = "La categoría no es válida.";
                 } else {
-                    if (!in_array($tmp_categoria, $lista_categorias)) {
-                        $err_categoria = "La categoría no es válida.";
-                    } else {
-                        $categoria_nuevo = $tmp_categoria;
-                    }
+                    $categoria_nueva = $tmp_categoria;
                 }
             }
 
@@ -248,8 +248,8 @@
 
             <!-- Categorías -->
             <div class="form-floating mb-3">
-                <select id="categoria" class="form-select" name="categoria" style="font-size: 14px;">
-                    <option selected hidden><?php echo $categoria_original ?></option>
+                <select id="categoria_nueva" class="form-select" name="categoria_nueva" style="font-size: 14px;">
+                    <option hidden value="<?php echo $categoria_original ?>" selected><?php echo $categoria_original ?></option>
                     <?php
                         foreach ($lista_categorias as $categoria) { ?>
                             <option value="<?php echo $categoria ?>">
@@ -257,7 +257,7 @@
                             </option>
                         <?php } ?>
                 </select>
-                <label for="categoria" style="margin-top: -6px;">Categoría</label>
+                <label for="categoria_nueva" style="margin-top: -6px;">Categoría</label>
                 <?php 
                     if(isset($err_categoria)){
                         echo "<span class='error'>$err_categoria</span>";
@@ -307,11 +307,11 @@
         </form>
     </div>
     <?php
-        if (isset($ubi_final_img) && isset($nombre) && isset($precio) && isset($categoria_nuevo) && isset($stock) && isset($descripcion)) {
+        if (isset($ubi_final_img) && isset($nombre) && isset($precio) && isset($categoria_nueva) && isset($stock) && isset($descripcion)) {
             $update = "UPDATE productos SET
                 nombre = '$nombre',
                 precio = '$precio',
-                categoria = '$categoria_nuevo',
+                categoria = '$categoria_nueva',
                 stock = '$stock',
                 imagen= '$ubi_final_img',
                 descripcion = '$descripcion'

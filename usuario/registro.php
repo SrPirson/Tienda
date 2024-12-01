@@ -56,9 +56,23 @@
     </style>
 </head>
 <body>
+
+    <?php
+        function depurar($entrada) {
+            if ($entrada == null) {
+                return "";
+            }
+            $salida = htmlspecialchars($entrada);
+            $salida = trim($salida);
+            $salida = stripslashes($salida);
+            $salida = preg_replace('!\s+!', ' ', $salida);
+            return $salida;
+        }
+    ?>
+
     <?php
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
-            $tmp_usuario = $_POST["usuario"];
+            $tmp_usuario = depurar($_POST["usuario"]);
             $tmp_contrasena = $_POST["contrasena"];
 
             if ($tmp_usuario == "") {
@@ -86,7 +100,7 @@
                 $err_contrasena = "La contraseña es obligatoria.";
             } else {
                 if (strlen($tmp_contrasena) < 8 || strlen($tmp_contrasena) > 15) {
-                    $err_contrasena = "La contraseña tiene que tener entre 8 y 15 caracteres.";
+                    $err_contrasena = "La contraseña debe tener entre 8 y 15 caracteres.";
                 } else {
                     $patron_contrasena = "/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/";
                     if (!preg_match($patron_contrasena, $tmp_contrasena)) {

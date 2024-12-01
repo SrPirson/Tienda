@@ -91,7 +91,7 @@
         <h1 class="display-4 text-primary mb-4 custom-header">Iniciar Sesión</h1>
 
         <form class="col-6" action="" method="post" enctype="multipart/form-data">
-        <div class="form-floating mb-3">
+            <div class="form-floating mb-3">
                 <input class="form-control" type="text" name="usuario" style="font-size: 14px;">
                 <label for="usuario" style="margin-top: -6px;">Usuario</label>
                 <?php 

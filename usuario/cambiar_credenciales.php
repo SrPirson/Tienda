@@ -55,13 +55,15 @@
     </style>
 </head>
 <body>
+
     <?php
 
         $usuario = $_SESSION["usuario"];
         
-    
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
-            $contrasena = $_POST["contrasena"];
+            $tmp_contrasena_act = $_POST["contraena_actual"];
+            $tmp_contrasena_nueva = $_POST["contrasena_nueva"];
+            $tmp_contrasena_conf = $_POST["contrasena_conf"];
 
             $sql = "SELECT * FROM usuarios WHERE usuario = '$usuario'";
             $resultado = $_conexion -> query($sql);
@@ -69,10 +71,31 @@
             while ($fila = $resultado -> fetch_assoc()) {
                 $contrasena_act = $fila["contrasena"];
             }
-            echo "Actual: $contrasena_act";
-            echo "Nueva: $contrasena";
-        
 
+
+            $comparador = password_verify($tmp_contrasena_act, $contrasena_act);
+            if (!$comparador) {
+                $err_act_contrasena = "La contraseña no es correcta.";
+            } else {
+                if ($tmp_contrasena_nueva == "" || $tmp_contrasena_conf == "") {
+                    $err_nueva_contrasena = "No puede haber campos vacíos.";
+                } else {
+                    if ($tmp_contrasena_nueva !== $tmp_contrasena_conf) {
+                        $err_nueva_contrasena = "Las contraseñas no coinciden.";
+                    } else {
+                        if (strlen($tmp_contrasena_nueva) < 8 || strlen($tmp_contrasena_nueva) > 15) {
+                            $err_nueva_contrasena = "La contraseña debe tener entre 8 y 15 caracteres.";
+                        } else {
+                            $patron_contrasena = "/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/";
+                            if (!preg_match($patron_contrasena, $tmp_contrasena_nueva)) {
+                                $err_nueva_contrasena = "La contraseña debe contener como minimo una mayuscula, números y letras.";
+                            } else {
+                                $contrasena_cifrada = password_hash($tmp_contrasena_nueva,PASSWORD_DEFAULT);
+                            }
+                        }
+                    }
+                }
+            }
         }
     ?>
     <nav>
@@ -88,11 +111,16 @@
         <h1 class="display-4 text-primary mb-4 custom-header">Cambiar contraseña</h1>
 
         <form class="col-6" action="" method="post" enctype="multipart/form-data">
-        <div class="form-floating mb-3">
+
+            <div class="form-floating mb-3">
+                <input class="form-control" type="text" name="usuario" style="font-size: 14px;" value="<?php echo "$usuario" ?>" disabled>
+                <label for="usuario" style="margin-top: -6px;">Usuario</label>
+            </div>
+
+            <div class="form-floating mb-3">
                 <input class="form-control" type="password" name="contraena_actual" style="font-size: 14px;">
                 <label for="contraena_actual" style="margin-top: -6px;">Contraseña actual</label>
                 <?php
-                echo "<p>$usuario</p>";
                     if(isset($err_act_contrasena)){
                         echo "<span class='error'>$err_act_contrasena</span>";
                     }
@@ -118,9 +146,16 @@
             <div class="custom-button-group">
                 <input type="hidden" name="usuario" value="<?php echo $usuario ?>">
                 <input class="btn btn-primary" type="submit" value="Guardar">
+                <a class="btn btn-danger" href="../index.php">Cancelar</a>
             </div>
         </form>
     </div>
+    <?php
+        if (isset($contrasena_cifrada)) {
+            $sql = "UPDATE usuarios SET contrasena = '$contrasena_cifrada' WHERE usuario = '$usuario'";
+            $_conexion -> query($sql);
+        }
+    ?>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </body>
 </html>
