@@ -12,7 +12,7 @@
 
         session_start();
         if (!isset($_SESSION["usuario"])) {
-            header("location: ../index.php");
+            header("location: ../usuario/iniciar_sesion.php");
             exit;
         }
     ?>
@@ -117,8 +117,18 @@
     <?php
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $nombre_categoria = $_POST["categoria"];
-            $sql = "DELETE FROM categorias WHERE categoria = '$nombre_categoria'";
-            $_conexion -> query($sql);
+
+            $comprobar = "SELECT * FROM productos WHERE categoria = '$nombre_categoria'";
+            $resultado = $_conexion -> query($comprobar);
+
+            if ($resultado -> num_rows >= 1) {
+                echo "<script>
+                        alert('No se puede borrar $nombre_categoria porque tiene productos asociados.');
+                     </script>";
+            } else {
+                $sql = "DELETE FROM categorias WHERE categoria = '$nombre_categoria'";
+                $_conexion -> query($sql);
+            }
         }
 
         $sql = "SELECT * FROM categorias";

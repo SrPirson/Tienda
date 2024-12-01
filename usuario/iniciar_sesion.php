@@ -112,7 +112,7 @@
             </div>
 
             <div class="custom-button-group">
-                <input class="btn btn-primary" type="submit" value="Iniciar Sesión">
+                <input class="btn btn-primary" type="submit" value="Iniciar sesión">
                 <a class="btn btn-secondary" href="./registro.php">Registrarse</a>
             </div>
         </form>

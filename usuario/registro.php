@@ -104,7 +104,7 @@
                 } else {
                     $patron_contrasena = "/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/";
                     if (!preg_match($patron_contrasena, $tmp_contrasena)) {
-                        $err_contrasena = "La contraseña debe contener como minimo una mayuscula, números y letras.";
+                        $err_contrasena = "La contraseña debe contener como minimo una mayuscula, número, letra y un caracter especial.";
                     } else {
                         $contrasena_cifrada = password_hash($tmp_contrasena,PASSWORD_DEFAULT);
                     }
