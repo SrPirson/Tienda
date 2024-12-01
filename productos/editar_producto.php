@@ -96,10 +96,18 @@
         while ($fila = $resultado -> fetch_assoc()) {
             $nombre = $fila["nombre"];
             $precio = $fila["precio"];
-            $categoria = $fila["categoria"];
             $stock = $fila["stock"];
+            $categoria_original = $fila["categoria"];
             $imagen = $fila["imagen"];
             $descripcion = $fila["descripcion"];
+        }
+
+        $sql_categorias = "SELECT categoria FROM categorias";
+        $resultado_categorias = $_conexion -> query($sql_categorias);
+
+        $lista_categorias = [];
+        while ($fila_categoria = $resultado_categorias -> fetch_assoc()) {
+            array_push($lista_categorias, $fila_categoria["categoria"]);
         }
         
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -108,7 +116,28 @@
             $tmp_categoria = depurar($_POST["categoria"]);
             $tmp_stock = depurar($_POST["stock"]);
             $tmp_descripcion = depurar($_POST["descripcion"]);
+            
 
+
+            /* Validación imagenes */
+            if ($_FILES["imagen"]["name"] != "") {
+                $nombre_img = $_FILES["imagen"]["name"];
+                $ubi_tmp_img = $_FILES["imagen"]["tmp_name"];
+                $type_img = $_FILES["imagen"]["type"];
+
+                if (strlen($nombre_img) > 60) {
+                    $err_imagen = "El nombre de la imagen no puede superar los 60 catacteres.";
+                } else {
+                    $lista_extensiones = ["", "image/png", "image/jpg", "image/jpeg", "image/webp"];
+                    if (!in_array($type_img, $lista_extensiones)) {
+                        $err_imagen = "La extensión de imagen no es admitida.";
+                    } else {
+                        $ubi_final_img = "../imagenes/$nombre_img";
+                        move_uploaded_file($ubi_tmp_img, $ubi_final_img);
+                    }
+                }
+            }
+            
 
             /* Validación nombre */
             if ($tmp_nombre == "") {
@@ -150,36 +179,32 @@
 
             /* Validación categoria */
             if ($tmp_categoria == "") {
-                $err_categoria = "La categoría es ogligatoria.";
+                $err_categoria = "La categoría es obligatoria.";
             } else {
                 if (strlen($tmp_categoria) > 30) {
-                    $err_categoria = "La categoría debe tener un máximo del 30 caracteres.";
+                    $err_categoria = "La categoría debe tener un máximo de 30 caracteres.";
                 } else {
-                    $sql = "SELECT * FROM categorias";
-                    $resultado_categoria = $_conexion -> query($sql);
-                    $lista_categorias = [];
-
-                    while ($fila = $resultado_categoria -> fetch_assoc()) {
-                        $lista_categorias[] = $fila['categoria'];
-                    }
-
                     if (!in_array($tmp_categoria, $lista_categorias)) {
-                        $err_categoria = "La categoría no es válida";
+                        $err_categoria = "La categoría no es válida.";
                     } else {
-                        $categoria = $tmp_categoria;
+                        $categoria_nuevo = $tmp_categoria;
                     }
                 }
             }
 
 
             /* Validación stock */
-            if (!is_numeric($tmp_stock)) {
-                $err_stock = "El stock debe ser numérico";
+            if ($tmp_stock == "") {
+                $stock = intval($tmp_stock);
             } else {
-                if ($tmp_stock < 0 || $tmp_stock > 2147483647) {
-                    $err_stock = "El stock debe ser mayor a 0 y menor a 2.147.483.647.";
+                if (!is_numeric($tmp_stock)) {
+                    $err_stock = "El stock debe ser numérico";
                 } else {
-                    $stock = $tmp_stock;
+                    if ($tmp_stock < 0 || $tmp_stock > 2147483647) {
+                        $err_stock = "El stock debe ser mayor a 0 y menor a 2.147.483.647.";
+                    } else {
+                        $stock = $tmp_stock;
+                    }
                 }
             }
 
@@ -224,9 +249,9 @@
             <!-- Categorías -->
             <div class="form-floating mb-3">
                 <select id="categoria" class="form-select" name="categoria" style="font-size: 14px;">
-                    <option selected><?php echo $categoria ?></option>
+                    <option selected hidden><?php echo $categoria_original ?></option>
                     <?php
-                        foreach ($categorias as $categoria) { ?>
+                        foreach ($lista_categorias as $categoria) { ?>
                             <option value="<?php echo $categoria ?>">
                                 <?php echo $categoria ?>
                             </option>
@@ -239,6 +264,7 @@
                     }
                 ?>
             </div>
+            
 
             <!-- Stock -->
             <div class="form-floating mb-3">
@@ -253,7 +279,7 @@
 
             <!-- Imagen -->
             <div class="form-floating mb-3">
-                <input class="form-control" type="file" name="imagen" id="imagen" style="font-size: 14px;" <?php echo $imagen ?>>
+                <input class="form-control" type="file" name="imagen" id="imagen" style="font-size: 14px;">
                 <label for="imagen" style="margin-top: -6px;">Imagen</label>
                 <?php 
                     if(isset($err_imagen)){
@@ -281,12 +307,13 @@
         </form>
     </div>
     <?php
-        if (isset($nombre) && isset($precio) && isset($categoria) && isset($stock) && isset($descripcion)) {
+        if (isset($ubi_final_img) && isset($nombre) && isset($precio) && isset($categoria_nuevo) && isset($stock) && isset($descripcion)) {
             $update = "UPDATE productos SET
                 nombre = '$nombre',
                 precio = '$precio',
-                categoria = '$categoria',
+                categoria = '$categoria_nuevo',
                 stock = '$stock',
+                imagen= '$ubi_final_img',
                 descripcion = '$descripcion'
                 WHERE id_producto = '$id_producto'
             ";

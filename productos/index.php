@@ -67,20 +67,36 @@
 
     <nav>
         <ul class="nav nav-tabs justify-content-end">
-        <li class="nav-item">
-            <?php
-                if (isset($_SESSION["usuario"])) {
-                    echo "<p class='nav-link mb-0 text-secondary'>Bienvenid@ " . $_SESSION["usuario"] . "</p>";
-                }
-            ?>
-        </li>
-        <li class="nav-item">
+            <li class="nav-item">
                 <?php
-                if (isset($_SESSION["usuario"])) {
-                    echo "<a class='nav-link' href='../usuario/cerrar_sesion.php'>Cerrar sesión</a>";
-                } else {
-                    echo "<a class='nav-link' href='../usuario/iniciar_sesion.php'>Iniciar sesión</a>";
-                }
+                    if (isset($_SESSION["usuario"])) {
+                        echo "<p class='nav-link dropdown-toggle text-secondary' data-bs-toggle='dropdown' role='button'>Bienvenid@ " . $_SESSION["usuario"] . "</p>";
+                    }
+                ?>
+                <ul class="dropdown-menu">
+                    <li>
+                    <?php
+                        if (isset($_SESSION["usuario"])) {
+                            echo "<a class='dropdown-item' href='../usuario/cambiar_credenciales.php'>Cambiar contraseña</a>";
+                        }
+                    ?>
+                    </li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li>
+                    <?php
+                        if (isset($_SESSION["usuario"])) {
+                            echo "<a class='dropdown-item' href='../usuario/cerrar_sesion.php'>Cerrar sesión</a>";
+                        }
+                    ?>
+                    </li>
+                </ul>
+            </li>
+
+            <li class="nav-item">
+                <?php
+                    if (!isset($_SESSION["usuario"])) {
+                        echo "<a class='nav-link' href='../usuario/iniciar_sesion.php'>Iniciar sesión</a>";
+                    }
                 ?>
             </li>
         </ul>

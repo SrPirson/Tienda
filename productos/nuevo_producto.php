@@ -93,7 +93,7 @@
             if (strlen($nombre_img) > 60) {
                 $err_imagen = "El nombre de la imagen no puede superar los 60 catacteres.";
             } else {
-                $lista_extensiones = ["image/png", "image/jpg", "image/jpeg", "image/webp"];
+                $lista_extensiones = ["", "image/png", "image/jpg", "image/jpeg", "image/webp"];
                 if (!in_array($type_img, $lista_extensiones)) {
                     $err_imagen = "La extensión de imagen no es admitida.";
                 } else {
@@ -165,15 +165,20 @@
 
 
             /* Validación stock */
-            if (!is_numeric($tmp_stock)) {
-                $err_stock = "El stock debe ser numérico";
+            if ($tmp_stock == "") {
+                $stock = intval($tmp_stock);
             } else {
-                if ($tmp_stock < 0 || $tmp_stock > 2147483647) {
-                    $err_stock = "El stock debe ser mayor a 0 y menor a 2.147.483.647.";
+                if (!is_numeric($tmp_stock)) {
+                    $err_stock = "El stock debe ser numérico";
                 } else {
-                    $stock = $tmp_stock;
+                    if ($tmp_stock < 0 || $tmp_stock > 2147483647) {
+                        $err_stock = "El stock debe ser mayor a 0 y menor a 2.147.483.647.";
+                    } else {
+                        $stock = $tmp_stock;
+                    }
                 }
             }
+            
 
 
             /* Validación descripción */

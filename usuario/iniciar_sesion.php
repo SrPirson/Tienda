@@ -64,7 +64,7 @@
             $resultado = $_conexion -> query($sql);
 
             if ($resultado -> num_rows == 0) {
-                echo "<h2>El usuario $usuario no existe.</h2>";
+                $err_usuario = "El usuario $usuario no existe.";
             } else {
                 $datos_usuario = $resultado -> fetch_assoc();
                 $acceso_concedido = password_verify($contrasena,$datos_usuario["contrasena"]);
@@ -74,7 +74,7 @@
                     header("location: ../index.php");
                     exit;
                 } else {
-                    echo "<h2>La contraseña es incorrecta</h2>";
+                    $err_contrasena = "La contraseña es incorrecta.";
                 }
             }
         }
