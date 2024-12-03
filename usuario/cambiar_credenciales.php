@@ -72,7 +72,6 @@
                 $contrasena_act = $fila["contrasena"];
             }
 
-
             $comparador = password_verify($tmp_contrasena_act, $contrasena_act);
             if (!$comparador) {
                 $err_act_contrasena = "La contraseña no es correcta.";
@@ -90,7 +89,11 @@
                             if (!preg_match($patron_contrasena, $tmp_contrasena_nueva)) {
                                 $err_nueva_contrasena = "La contraseña debe contener como minimo una mayuscula, números y letras.";
                             } else {
-                                $contrasena_cifrada = password_hash($tmp_contrasena_nueva,PASSWORD_DEFAULT);
+                                if ($tmp_contrasena_act === $tmp_contrasena_conf) {
+                                    $err_nueva_contrasena = "La contraseña no puede ser la misma.";
+                                } else {
+                                    $contrasena_cifrada = password_hash($tmp_contrasena_nueva,PASSWORD_DEFAULT);
+                                }
                             }
                         }
                     }
