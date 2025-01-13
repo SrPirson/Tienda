@@ -118,16 +118,30 @@
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $nombre_categoria = $_POST["categoria"];
 
+            /*
             $comprobar = "SELECT * FROM productos WHERE categoria = '$nombre_categoria'";
             $resultado = $_conexion -> query($comprobar);
+            */
+
+            $sql = $_conexion -> prepare("SELECT * FROM productos WHERE categoria = ?");
+            $sql -> bind_param("s", $nombre_categoria);
+            $sql -> execute();
+            $resultado = $sql -> get_result();
 
             if ($resultado -> num_rows >= 1) {
                 echo "<script>
                         alert('No se puede borrar $nombre_categoria porque tiene productos asociados.');
                      </script>";
             } else {
+                /*
                 $sql = "DELETE FROM categorias WHERE categoria = '$nombre_categoria'";
                 $_conexion -> query($sql);
+                */
+
+                $sql = $_conexion -> prepare("DELETE FROM categorias WHERE categoria = ?");
+                $sql -> bind_param("s", $nombre_categoria);
+                $sql -> execute();
+
             }
         }
 

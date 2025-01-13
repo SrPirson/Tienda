@@ -89,8 +89,14 @@
                     if (!preg_match($patron_categoria, $tmp_categoria)) {
                         $err_categoria = "La categoría solamente puede contener letras y espacios en blanco.";
                     } else {
-                        $sql = "SELECT * FROM categorias WHERE categoria = '$tmp_categoria'";
-                        $resultado = $_conexion -> query($sql);
+                        /* $sql = "SELECT * FROM categorias WHERE categoria = '$tmp_categoria'";
+                        $resultado = $_conexion -> query($sql); */
+
+                        $sql = $_conexion -> prepare("SELECT * FROM categorias WHERE categoria = ?");
+                        $sql -> bind_param("s", $tmp_categoria);
+                        $sql -> execute();
+                        $resultado = $sql -> get_result();
+
                         if ($resultado -> num_rows == 1) {
                             $err_categoria = "La categoría ya existe.";
                         } else {
@@ -150,9 +156,13 @@
     <?php
         /* Enviar a la BBDD */
         if (isset($categoria) && isset($descripcion)) {
-            $enviar = "INSERT INTO categorias (categoria, descripcion) 
+            /* $enviar = "INSERT INTO categorias (categoria, descripcion) 
                 VALUES ('$categoria', '$descripcion')";
-            $_conexion -> query($enviar);
+            $_conexion -> query($enviar); */
+
+            $sql = $_conexion -> prepare("INSERT INTO categorias (categoria, descripcion) 
+                VALUES (?, ?)");
+            $sql -> bind_param("ss", $categoria, $descripcion);
         }
     ?>
 

@@ -60,8 +60,13 @@
             $usuario = $_POST["usuario"];
             $contrasena = $_POST["contrasena"];
 
-            $sql = "SELECT * FROM usuarios WHERE usuario = '$usuario'";
-            $resultado = $_conexion -> query($sql);
+            /* $sql = "SELECT * FROM usuarios WHERE usuario = '$usuario'";
+            $resultado = $_conexion -> query($sql); */
+
+            $sql = $_conexion -> prepare("SELECT * FROM usuarios WHERE usuario = ?");
+            $sql -> bind_param("s", $usuario);
+            $sql -> execute();
+            $resultado = $sql -> get_result();
 
             if ($resultado -> num_rows == 0) {
                 $err_usuario = "El usuario $usuario no existe.";

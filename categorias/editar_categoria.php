@@ -90,8 +90,16 @@
         <?php
 
         $categoria = $_GET["categoria"];
+        /*
         $sql = "SELECT * FROM categorias WHERE categoria = '$categoria'";
         $resultado = $_conexion -> query($sql);
+        */
+
+        $sql = $_conexion -> prepare("SELECT * FROM categorias WHERE categoria = ?");
+        $sql -> bind_param("s", $categoria);
+        $sql -> execute();
+        $resultado = $sql -> get_result();
+
 
         while ($fila = $resultado -> fetch_assoc()) {
             $categoria = $fila["categoria"];

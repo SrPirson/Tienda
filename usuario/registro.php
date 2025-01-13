@@ -78,8 +78,8 @@
             if ($tmp_usuario == "") {
                 $err_usuario = "El usuario es obligatorio.";
             } else {
-                $sql = "SELECT * FROM usuarios WHERE usuario = '$tmp_usuario'";
-                $resultado = $_conexion -> query($sql);
+                /* $sql = "SELECT * FROM usuarios WHERE usuario = '$tmp_usuario'";
+                $resultado = $_conexion -> query($sql); */
                 if ($resultado -> num_rows == 1) {
                     $err_usuario = "El usuario ya existe.";
                 } else {

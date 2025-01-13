@@ -155,8 +155,13 @@
     </div>
     <?php
         if (isset($contrasena_cifrada)) {
-            $sql = "UPDATE usuarios SET contrasena = '$contrasena_cifrada' WHERE usuario = '$usuario'";
-            $_conexion -> query($sql);
+            /* $sql = "UPDATE usuarios SET contrasena = '$contrasena_cifrada' WHERE usuario = '$usuario'";
+            $_conexion -> query($sql); */
+
+            $sql = $_conexion -> prepare("UPDATE usuarios SET contrasena = ? WHERE usuario = ?");
+            $sql -> bind_param("ss", $contrasena_cifrada, $usuario);
+            $sql -> execute();
+
         }
     ?>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>

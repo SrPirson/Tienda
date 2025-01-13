@@ -90,8 +90,13 @@
         <?php
 
         $id_producto = $_GET["id_producto"];
-        $sql = "SELECT * FROM productos WHERE id_producto = '$id_producto'";
-        $resultado = $_conexion -> query($sql);
+        /* $sql = "SELECT * FROM productos WHERE id_producto = '$id_producto'";
+        $resultado = $_conexion -> query($sql); */
+
+        $sql = $_conexion -> prepare("SELECT * FROM productos WHERE id_producto = ?");
+        $sql -> bind_param("i", $id_producto);
+        $sql -> execute();
+        $resultado = $sql -> get_result();
 
         while ($fila = $resultado -> fetch_assoc()) {
             $nombre = $fila["nombre"];
@@ -308,7 +313,7 @@
     </div>
     <?php
         if (isset($ubi_final_img) && isset($nombre) && isset($precio) && isset($categoria_nueva) && isset($stock) && isset($descripcion)) {
-            $update = "UPDATE productos SET
+            /* $update = "UPDATE productos SET
                 nombre = '$nombre',
                 precio = '$precio',
                 categoria = '$categoria_nueva',
@@ -317,7 +322,19 @@
                 descripcion = '$descripcion'
                 WHERE id_producto = '$id_producto'
             ";
-            $_conexion -> query($update);
+            $_conexion -> query($update); */
+
+            $sql = $_conexion -> prepare("UPDATE productos SET
+                nombre = ?,
+                precio = ?,
+                categoria = ?,
+                stock = ?,
+                imagen= ?,
+                descripcion = ?
+                WHERE id_producto = ?");
+
+            $sql -> bind_param("sdsissi", $nombre, $precio, $categoria_nueva, $stock, $ubi_final_img, $descripcion, $id_producto);
+            $sql -> execute();
         }
     ?>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
